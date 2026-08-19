@@ -7,6 +7,7 @@ import Host from "./Host";
 import Lobby from "./Lobby";
 import { Error } from "./Error";
 import { Leaderboard } from "./Leaderboard";
+import ErrorBoundary from "./ErrorBoundry";
 
 function App() {
   const location = useLocation();
@@ -57,6 +58,7 @@ function App() {
       <Route
         path="/"
         element={
+           <ErrorBoundary fallback={<Error />}>
           <>
             <div className="stars" id="stars"></div>
             <div className="App">
@@ -132,17 +134,18 @@ function App() {
               </header>
             </div>
           </>
+          </ErrorBoundary>
         }
       />
 
       {/* QUIZ ROUTE */}
-      <Route path="/host" element={<Host />}></Route>
-      <Route path="/instructions" element={<Quiz />} />
-      <Route path="/quiz" element={<Quizstart />} />
-      <Route path="/lobby" element={<Lobby />} />
+      <Route path="/host" element={ <ErrorBoundary fallback={<Error />}><Host /></ErrorBoundary>}></Route>
+      <Route path="/instructions" element={ <ErrorBoundary fallback={<Error />}><Quiz /></ErrorBoundary>} />
+      <Route path="/quiz" element={ <ErrorBoundary fallback={<Error />}><Quizstart /></ErrorBoundary>} />
+      <Route path="/lobby" element={ <ErrorBoundary fallback={<Error />}><Lobby /></ErrorBoundary>} />
       <Route path="/error" element={<Error />} />
-      <Route path="/leaderboard" element={<Leaderboard />} />
-
+      <Route path="/leaderboard" element={ <ErrorBoundary fallback={<Error />}><Leaderboard /></ErrorBoundary>} />
+      <Route path="*" element={<Error />} />
     </Routes>
   );
 }

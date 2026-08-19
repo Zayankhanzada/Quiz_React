@@ -9,7 +9,7 @@ import { generateQuiz } from "./GemeniService";
 
 function Host() {
     console.log(process.env.REACT_APP_GEMINI_API_KEY);
-    
+
 
     // All Declearation of Component
     // Host setup Declearation
@@ -197,8 +197,7 @@ function Host() {
 
         await fetchAIQuestions();
     }
-
-
+// throw new Error("Testing Error Boundary");
 
     return (
         <>

@@ -45,10 +45,10 @@ export default function Quizstart() {
     navigate("/instructions");
   };
 
-  const exitwithskip= () => {
-    setShowModal(false);
-    navigate("/leaderboard");
-  };
+  // const exitwithskip = () => {
+  //   setShowModal(false);
+  //   navigate("/leaderboard");
+  // };
   // UseEffect for the prevention of page reloading
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -68,19 +68,36 @@ export default function Quizstart() {
       navigate("/error")
     );
   }
-  function submitAnswer () {
+  function submitAnswer() {
     if (selectedOption === null) {
       alert("Please select an answer.");
       return;
     }
 
-    setAnswers((prev) => ({
-      ...prev,
-      [currentQuestion]: selectedOption,
-    }));
+    if (!answerSubmitted) {
+      setAnswers((prev) => ({
+        ...prev,
+        [currentQuestion]: selectedOption,
+      }));
 
-    setAnswerSubmitted(true);
-  };
+      setAnswerSubmitted(true);
+      return;
+    }
+
+    // Move to next question
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion((prev) => prev + 1);
+      setSelectedOption(null);
+      setAnswerSubmitted(false);
+    } else {
+      navigate("/leaderboard", {
+        state: {
+          questions,
+          answers,
+        },
+      });
+    }
+  }
 
   function skipQuestion() {
     if (currentQuestion < questions.length - 1) {
@@ -95,40 +112,7 @@ export default function Quizstart() {
     );
 
     if (hasUnansweredQuestions) {
-      <div
-        className="modal fade show d-block"
-        tabIndex="-1"
-        style={{ color: theme.color }}
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content rounded-3 shadow">
-            <div className="modal-body p-4 text-center" style={{ color: theme.color }}>
-              <h5 className="mb-0">Want to Exit with Skipped Questions?</h5>
-              <p className="mb-0 mt-1">
-                If you leave now, your current progress will be calculated according to attempted question.
-              </p>
-            </div>
-
-            <div className="modal-footer flex-nowrap p-0">
-              <button
-                type="button"
-                className="btn btn-lg exit-button btn-link fs-6 text-decoration-none col-6 py-3 m-0 rounded-0 border-end"
-                onClick={exitwithskip}
-                style={{ color: theme.color }}>
-                <strong>Exit Quiz </strong>
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-lg btn-success btn-link fs-6 text-decoration-none col-6 py-3 m-0 rounded-0"
-                onClick={() => setShowModal(false)}
-                style={{ color: theme.color }} >
-                Want to Complete! 👍
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      setShowModal(true);
       return;
     }
 
@@ -385,7 +369,7 @@ export default function Quizstart() {
               style={{ color: theme.color }}
             >
               <h6 className="fw-bold mb-2">
-                Why is this correct?
+                Explaination:
               </h6>
 
               <p className="mb-0">
@@ -413,12 +397,12 @@ export default function Quizstart() {
               className="btn btn-secondary btn-border-success submit-btn"
               style={theme}
               onClick={submitAnswer}
-              disabled={
-                selectedOption === null || answerSubmitted
-              }
+              disabled={selectedOption === null}
             >
               {answerSubmitted
-                ? "Answer Submitted"
+                ? currentQuestion === questions.length - 1
+                  ? "Finish Quiz"
+                  : "Next Question"
                 : "Submit Answer"}
             </button>
 
